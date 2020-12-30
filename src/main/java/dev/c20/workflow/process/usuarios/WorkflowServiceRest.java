@@ -5,10 +5,7 @@ import dev.c20.workflow.commons.wrapper.RemoteTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -27,9 +24,19 @@ public class WorkflowServiceRest {
     @GetMapping
     ResponseEntity<?> get(HttpServletRequest request) throws Exception {
 
-        remoteTaskService.init("http://localhost:8089", "/workflow", request.getHeader(CommonsConfig.HEADER_AUTHORIZATION));
+        remoteTaskService.init("http://localhost:8089",
+                "/workflow", request.getHeader(CommonsConfig.HEADER_AUTHORIZATION));
 
-        return null;
+        return ResponseEntity.ok(remoteTaskService.getAll());
+    }
+    @PutMapping
+    ResponseEntity<?> create(@RequestBody Map<String,Object> data, HttpServletRequest request) throws Exception {
+
+        remoteTaskService.init("http://localhost:8089",
+                "/workflow", request.getHeader(CommonsConfig.HEADER_AUTHORIZATION));
+
+        remoteTaskService.start((String)data.get("workflow"),data);
+        return ResponseEntity.ok(remoteTaskService.getAll());
     }
 
 }
